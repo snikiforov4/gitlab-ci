@@ -1,0 +1,18 @@
+# Terraform
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+backend.tf
+
+# Ansible
+*.retry
+# Config file for dynanic inventory contains sensitive information
+gce.ini
+
+# Python
+*.pyc
+
+# Common 
+*.log
