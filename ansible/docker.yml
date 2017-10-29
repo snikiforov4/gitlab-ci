@@ -18,16 +18,19 @@
         - ca-certificates
         - curl
         - software-properties-common
+      tags: docker   
 
-    - name: Add repository key
+    - name: Add docker repository key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
+      tags: docker
 
-    - name: Set up repository
+    - name: Set up docker repository
       apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu xenial stable
         state: present
+      tags: docker
 
     - name: Install docker
       apt: 
@@ -35,19 +38,20 @@
       with_items:
         - docker-ce
         - docker-compose
+      tags: docker
       notify: restart docker
       
-    - name: 
+    - name: Grant a user the ability to run containers
       user:
         name: appuser
         createhome: no
         groups: 
           - docker
         append: yes
+      tags: docker
 
   handlers:
     - name: restart docker
       service: 
         name: docker 
         state: restarted
-
