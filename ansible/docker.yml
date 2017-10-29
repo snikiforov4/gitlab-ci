@@ -1,0 +1,53 @@
+- name: Install Docker Engine
+  hosts: ci-server
+  gather_facts: false
+  become: true
+
+  pre_tasks:
+    - name: Install python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: false
+
+  tasks:
+    - name: Install packages to allow apt to use a repository over HTTPS 
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add repository key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Set up repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+
+    - name: Install docker
+      apt: 
+        name: "{{ item }}"
+      with_items:
+        - docker-ce
+        - docker-compose
+      notify: restart docker
+      
+    - name: 
+      user:
+        name: appuser
+        createhome: no
+        groups: 
+          - docker
+        append: yes
+
+  handlers:
+    - name: restart docker
+      service: 
+        name: docker 
+        state: restarted
+
